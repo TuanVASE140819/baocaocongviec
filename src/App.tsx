@@ -15,6 +15,7 @@ import Settings from './pages/Settings';
 import Tables from './pages/Tables';
 import Alerts from './pages/UiElements/Alerts';
 import Buttons from './pages/UiElements/Buttons';
+import PDFTable from './components/PDF/PDFTable';
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -131,6 +132,19 @@ function App() {
             <>
               <PageTitle title="Signin | TailAdmin - Tailwind CSS Admin Dashboard Template" />
               <SignIn />
+            </>
+          }
+        />
+         <Route
+          path="/pdf-table"
+          element={
+            <>
+              <PageTitle title="Print | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <PDFTable data = {[
+                { column1: 'Data 1', column2: 'Data 2', column3: 'Data 3' },
+                { column1: 'Data 4', column2: 'Data 5', column3: 'Data 6' },
+                { column1: 'Data 7', column2: 'Data 8', column3: 'Data 9' },
+              ]} />
             </>
           }
         />

@@ -30,6 +30,7 @@ import { db } from "../../components/firebase"; // Import your Firestore instanc
 import { useEffect, useState } from "react";
 import moment from "moment";
 import { get } from "firebase/database";
+import PDFTable from "../../components/PDF/PDFTable";
 type DataType = {
   // Define the shape of the data here. For example:
   date: string;
@@ -135,24 +136,40 @@ const FormElements = () => {
     await createData(data);
   };
 
+  // window.location.href = "/pdf-table";
 
-  //  handle search date 
-  const handleSearch = async (event: any) => {
-    event.preventDefault();
-    const data: DataType = {
-      date: date,
-      name: name,
-      now: event.target[2].value,
-      tomorrow: event.target[3].value,
-    };
-    await createData(data);
-  };
-
+  const handlePrint = () => {
+    window.location.href = "/pdf-table";
+  }
   return (
     <DefaultLayout>
       <Breadcrumb pageName="Báo cáo công việc" />
 
       <div className="grid grid-cols-1 gap-9 sm:grid-cols-1">
+        {/* / button có svg máy in */}
+        <div className="flex justify-end">
+  <button className="flex items-center gap-2 text-primary font-medium text-base bg-white border border-primary rounded-lg px-5 py-3 hover:bg-primary hover:text-white focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 transition duration-300 ease-in-out"
+  onClick={handlePrint}
+  >
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M15 5H5V15H15V5ZM15 3C16.1046 3 17 3.89543 17 5V15C17 16.1046 16.1046 17 15 17H5C3.89543 17 3 16.1046 3 15V5C3 3.89543 3.89543 3 5 3H15Z"
+        fill="#64748B"
+      />
+      <path
+        d="M7 3H13V5H7V3ZM7 15H13V17H7V15ZM7 7H13V9H7V7ZM7 11H13V13H7V11Z"
+        fill="#64748B"
+      />
+    </svg>
+    IN BÁO CÁO
+  </button>
+</div>
         <div className="flex flex-col gap-9">
           {/* <!-- Textarea Fields --> */}
           <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
@@ -232,6 +249,9 @@ const FormElements = () => {
           </form>
         </div>
       </div>
+
+      {/* <PDFTabledata ={data} /> */}
+
     </DefaultLayout>
   );
 };
