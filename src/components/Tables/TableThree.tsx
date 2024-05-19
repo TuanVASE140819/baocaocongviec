@@ -1,5 +1,7 @@
 import { Package } from '../../types/package';
-
+import { setDoc, doc, deleteDoc, updateDoc, addDoc, collection } from "firebase/firestore";
+import { db } from '../../components/firebase'; // Import your Firestore instance from the correct file path
+import { useState } from 'react';
 type DataType = {
   // Define the shape of the data here. For example:
   lastName: string;
@@ -11,6 +13,40 @@ const TableThree = ({ data }: {
   data: Package[
   
 ] }) => { 
+  const createData = async (data: DataType) => {
+    await addDoc(collection(db, 'Users'), data);
+  };
+
+  // Update function
+  const updateData = async (id: string, data: DataType) => {
+    const docRef = doc(db, 'Users', id);
+    await updateDoc(docRef, data);
+  };
+
+  // Delete function
+  const deleteData = async (id: string) => {
+    const docRef = doc(db, 'Users', id);
+    await deleteDoc(docRef);
+  };
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [currentItem, setCurrentItem] = useState<Package | null>(null);
+
+  // Define createData, updateData, and deleteData as before...
+
+  const handleEditClick = (item: Package) => {
+    setIsEditing(true);
+    setCurrentItem(item);
+  };
+
+  const handleFormSubmit = (data: DataType) => {
+    if (currentItem) {
+      updateData(currentItem.id, data);
+    }
+    setIsEditing(false);
+    setCurrentItem(null);
+  };
+
   return (
     <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
       <div className="max-w-full overflow-x-auto">
@@ -81,16 +117,28 @@ const TableThree = ({ data }: {
                   </span>
                 </td>
                 <td className="py-4 px-4">
-                  <button className="text-primary-600 hover:text-primary-700">
-                    Edit
-                  </button>
-                </td>
+              <button onClick={() => handleEditClick(packageItem)} className="
+                bg-blue-500
+                hover:bg-blue-700
+                text-white
+                font-bold
+                py-2
+                px-4
+                rounded
+                focus:outline-none
+                focus:shadow-outline
+                mr-2
+              ">
+                Edit
+              </button>
+            </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
     </div>
+   
   );
 };
 

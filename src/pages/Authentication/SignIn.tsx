@@ -8,22 +8,28 @@ import { auth, db } from '../../components/firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import firebase from 'firebase/app'; // Add this import
 import { toast } from 'react-toastify';
+
+import useLocalStorage from '../../hooks/useLocalStorage';
+
 const SignIn: React.FC = () => {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [user, setUser] = useLocalStorage('user', null); // Add this line
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       try {
-        await signInWithEmailAndPassword(auth, email, password);
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
         console.log('User logged in Successfully');
+        setUser(userCredential.user as any); // Add this line
         window.location.href = '/';
         toast.success('User logged in Successfully', {
           position: 'top-center',
         });
       } catch (error : any) {
         console.log(error.message);
-
+  
         toast.error(error.message, {
           position: 'bottom-center',
         });
