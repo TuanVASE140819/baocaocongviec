@@ -26,15 +26,25 @@ const DropdownUser = () => {
   });
 
   // close if the esc key is pressed
-  useEffect(() => {
-    const keyHandler = ({ keyCode }: KeyboardEvent) => {
-      if (!dropdownOpen || keyCode !== 27) return;
-      setDropdownOpen(false);
+    useEffect(() => {
+      const keyHandler = ({ keyCode }: KeyboardEvent) => {
+        if (!dropdownOpen || keyCode !== 27) return;
+        setDropdownOpen(false);
+      };
+      document.addEventListener('keydown', keyHandler);
+      return () => document.removeEventListener('keydown', keyHandler);
+    });
+  //  logout function xóa localstore
+    const logout = () => {
+      localStorage.removeItem('user');
+      window.location.reload();
+      // chuyện hướng về trang login
+      window.location.href = '/auth/signin';
     };
-    document.addEventListener('keydown', keyHandler);
-    return () => document.removeEventListener('keydown', keyHandler);
-  });
 
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const name = user.email;
+    const role = user.role;
   return (
     <div className="relative">
       <Link
@@ -45,9 +55,11 @@ const DropdownUser = () => {
       >
         <span className="hidden text-right lg:block">
           <span className="block text-sm font-medium text-black dark:text-white">
-            Thomas Anree
+            {name} 
           </span>
-          <span className="block text-xs">UX Designer</span>
+          <span className="block text-xs">
+            {role}
+          </span>
         </span>
 
         <span className="h-12 w-12 rounded-full">
@@ -80,7 +92,7 @@ const DropdownUser = () => {
           dropdownOpen === true ? 'block' : 'hidden'
         }`}
       >
-        <ul className="flex flex-col gap-5 border-b border-stroke px-6 py-7.5 dark:border-strokedark">
+        {/* <ul className="flex flex-col gap-5 border-b border-stroke px-6 py-7.5 dark:border-strokedark">
           <li>
             <Link
               to="/profile"
@@ -152,8 +164,10 @@ const DropdownUser = () => {
               Account Settings
             </Link>
           </li>
-        </ul>
-        <button className="flex items-center gap-3.5 px-6 py-4 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base">
+        </ul> */}
+        <button 
+        
+        className="flex items-center gap-3.5 px-6 py-4 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base">
           <svg
             className="fill-current"
             width="22"
