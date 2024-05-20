@@ -45,96 +45,97 @@ const FormElements = () => {
 
   const [date, setDate] = useState(moment().format("DD/MM/YYYY"));
   const [data, setData] = useState<Package[]>([]);
+const [allData, setAllData] = useState<Package[]>([]);
 
-  // setDate(moment().format('DD/MM/YYYY'));
+console.log('date', date);
+useEffect(() => {
+  // Init flatpickr
+  flatpickr('.form-datepicker', {
+    mode: 'single',
+    static: true,
+    monthSelectorType: 'static',
+    dateFormat: 'M j, Y',
+    onChange: function (selectedDates, dateStr, instance) {
+      setDate(moment(selectedDates[0]).format('DD/MM/YYYY'));
+    },
+    prevArrow:
+      '<svg className="fill-current" width="7" height="11" viewBox="0 0 7 11"><path d="M5.4 10.8l1.4-1.4-4-4 4-4L5.4 0 0 5.4z" /></svg>',
+    nextArrow:
+      '<svg className="fill-current" width="7" height="11" viewBox="0 0 7 11"><path d="M1.4 10.8L0 9.4l4-4-4-4L1.4 0l5.4 5.4z" /></svg>',
+  });
+}, []);
 
-  console.log(date);
-  useEffect(() => {
-    // Init flatpickr
-    flatpickr(".form-datepicker", {
-      mode: "single",
-      static: true,
-      monthSelectorType: "static",
-      dateFormat: "M j, Y",
-      onChange: function(selectedDates, dateStr, instance) {
-        setDate(
-          moment(selectedDates[0]).format("DD/MM/YYYY")
-        );
-      },
-      prevArrow:
-        '<svg className="fill-current" width="7" height="11" viewBox="0 0 7 11"><path d="M5.4 10.8l1.4-1.4-4-4 4-4L5.4 0 0 5.4z" /></svg>',
-      nextArrow:
-        '<svg className="fill-current" width="7" height="11" viewBox="0 0 7 11"><path d="M1.4 10.8L0 9.4l4-4-4-4L1.4 0l5.4 5.4z" /></svg>',
+const createData = async (data: DataType) => {
+  await addDoc(collection(db, 'Reports'), data);
+};
+
+// Update function
+const updateData = async (id: string, data: DataType) => {
+  const docRef = doc(db, 'Reports', id);
+  await updateDoc(docRef, data);
+};
+
+// Delete function
+const deleteData = async (id: string) => {
+  const docRef = doc(db, 'Reports', id);
+  await deleteDoc(docRef);
+};
+// console local storage. email
+
+console.log('name', name);
+console.log('date', date);
+const getData = async () => {
+  const email = localStorage.getItem('user');
+  if (email) {
+    const querySnapshot = await getDocs(
+      query(
+        collection(db, 'Reports'),
+        where('name', '==', name),
+        where('date', '==', date),
+      ),
+    );
+    let data: Package[] = [];
+    querySnapshot.forEach((doc) => {
+      console.log(doc.id, ' => ', doc.data());
+      data.push(doc.data() as Package);
     });
-  }, []);
+    setData(data);
+  }
+};
 
-  const createData = async (data: DataType) => {
-    await addDoc(collection(db, "Reports"), data);
+const getAllData = async () => {
+  const querySnapshot = await getDocs(collection(db, 'Reports'));
+  querySnapshot.forEach((doc) => {
+    console.log(doc.id, ' => ', doc.data());
+    setAllData((prev) => [...prev, doc.data() as Package]);
+  });
+};
+
+console.log('allData', allData);
+useEffect(() => {
+  getData();
+}, [name, date]);
+
+console.log('data', data);
+
+useEffect(() => {
+  const user = localStorage.getItem('user');
+  if (user) {
+    let userObj = JSON.parse(user);
+    setName(userObj.email || '');
+  }
+}, []);
+
+const handleSubmit = async (event: any) => {
+  event.preventDefault();
+  const data: DataType = {
+    date: date,
+    name: name,
+    now: event.target[0].value,
+    tomorrow: event.target[1].value,
   };
-
-  // Update function
-  const updateData = async (id: string, data: DataType) => {
-    const docRef = doc(db, "Reports", id);
-    await updateDoc(docRef, data);
-  };
-
-  // Delete function
-  const deleteData = async (id: string) => {
-    const docRef = doc(db, "Reports", id);
-    await deleteDoc(docRef);
-  };
-  // console local storage. email
-
-  const getData = async () => {
-    const email = localStorage.getItem("user");
-    if (email) {
-      const querySnapshot = await getDocs(
-        query(
-          collection(db, "Reports"),
-          where("name", "==", name),
-          where("date", "==", date)
-        )
-      );
-      let data: Package[] = [];
-      querySnapshot.forEach((doc) => {
-        console.log(doc.id, " => ", doc.data());
-        data.push(doc.data() as Package);
-      });
-      setData(data);
-    }
-  };
-
-  // const getAllData = async () => {
-  //   const querySnapshot = await getDocs(collection(db, 'Reports'));
-  //   querySnapshot.forEach((doc) => {
-  //     console.log(doc.id, ' => ', doc.data());
-  //   });
-  // }
-
-  useEffect(() => {
-    getData();
-  }, [name, date]);
-
-  console.log(data);
-
-  useEffect(() => {
-    const user = localStorage.getItem("user");
-    if (user) {
-      let userObj = JSON.parse(user);
-      setName(userObj.email || "");
-    }
-  }, []);
-
-  const handleSubmit = async (event: any) => {
-    event.preventDefault();
-    const data: DataType = {
-      date: moment().format("DD/MM/YYYY"),
-      name: name,
-      now: event.target[2].value,
-      tomorrow: event.target[3].value,
-    };
-    await createData(data);
-  };
+  await createData(data);
+};
 
   // window.location.href = "/pdf-table";
 
